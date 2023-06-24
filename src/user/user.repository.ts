@@ -13,4 +13,8 @@ export class UserRepository {
   async findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
+
+  async save(user: User): Promise<User> {
+    return this.usersRepository.save(user);
+  }
 }

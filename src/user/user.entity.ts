@@ -17,6 +17,9 @@ export class User {
   name: string;
 
   @Column({ type: 'text' })
+  email: string;
+
+  @Column({ type: 'text' })
   password: string;
 
   @CreateDateColumn({
