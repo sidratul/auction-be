@@ -2,10 +2,15 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './user.dto';
+import { AuthService } from '../auth/auth.service';
+import { AuthToken } from '../auth/types';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Get()
   async getHello(): Promise<User[]> {
@@ -13,8 +18,8 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<boolean> {
-    await this.userService.createUser(createUserDto);
-    return true;
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<AuthToken> {
+    const user = await this.userService.createUser(createUserDto);
+    return this.authService.getTokenFromUser(user);
   }
 }

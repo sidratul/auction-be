@@ -24,11 +24,6 @@ export class UserService {
     }
 
     const user = new User();
-
-    console.log(
-      "this.configService.get('SALT')",
-      this.configService.get('SALT'),
-    );
     user.email = dto.email;
     user.name = dto.name;
     user.password = await bcrypt.hash(
