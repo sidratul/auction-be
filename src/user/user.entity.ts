@@ -11,7 +11,7 @@ import {
 export class User {
   @PrimaryGeneratedColumn('uuid')
   @Generated('uuid')
-  id: number;
+  id: string;
 
   @Column({ type: 'text' })
   name: string;
@@ -19,7 +19,7 @@ export class User {
   @Column({ type: 'text' })
   email: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', select: false })
   password: string;
 
   @CreateDateColumn({

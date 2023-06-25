@@ -4,6 +4,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './user.dto';
 import { AuthService } from '../auth/auth.service';
 import { AuthToken } from '../auth/types';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -28,10 +30,17 @@ describe('UserController', () => {
       controllers: [UserController],
       providers: [
         UserService,
-        AuthService,
         {
           provide: UserService,
           useValue: userService,
+        },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
+        {
+          provide: ConfigService,
+          useValue: {},
         },
         {
           provide: AuthService,

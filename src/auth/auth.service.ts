@@ -1,23 +1,30 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
+  InternalServerErrorException,
+  Logger,
   UnauthorizedException,
+  forwardRef,
 } from '@nestjs/common';
 import { LoginDto } from './login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { AuthToken } from './types';
+import { AuthToken, TokenPayload } from './types';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.entity';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
+    @Inject(forwardRef(() => UserService))
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
   async login(dto: LoginDto): Promise<AuthToken> {
-    const user = await this.userService.findByEmail(dto.email);
+    const user = await this.userService.getByEmailWithPassword(dto.email);
     if (!user) {
       throw new BadRequestException('User not exist');
     }
@@ -31,10 +38,19 @@ export class AuthService {
   }
 
   async getTokenFromUser(user: User): Promise<AuthToken> {
-    const payload = { id: user.id, name: user.name, email: user.email };
-    /** Create refresh token */
+    const payload: TokenPayload = {
+      id: user.id,
+      email: user.email,
+    };
+
+    const token = await this.jwtService.signAsync(payload).catch((err) => {
+      this.logger.error(`Failed to create jwt token. Error: ${err.message}`);
+      throw new InternalServerErrorException();
+    });
+
+    /** TODO: Create refresh token */
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: token,
     };
   }
 }

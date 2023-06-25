@@ -12,7 +12,7 @@ describe('UserService', () => {
     save() {
       return;
     },
-    findByEmail() {
+    getByEmail() {
       return;
     },
   };
@@ -59,7 +59,7 @@ describe('UserService', () => {
       const uuid = '0e6f5565-5eeb-4e13-8bed-e35309c72ff1';
       jest.spyOn(configService, 'get').mockImplementation(() => 10);
       jest
-        .spyOn(userRepository, 'findByEmail')
+        .spyOn(userRepository, 'getByEmail')
         .mockImplementation(() => Promise.resolve(undefined));
       jest.spyOn(userRepository, 'save').mockImplementation(() =>
         Promise.resolve({

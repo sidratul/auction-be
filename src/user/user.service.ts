@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
@@ -7,6 +12,8 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     private usersRepository: UserRepository,
     private configService: ConfigService,
@@ -17,8 +24,8 @@ export class UserService {
   }
 
   async createUser(dto: CreateUserDto): Promise<User> {
-    // check if user exists
-    const existsUser = await this.findByEmail(dto.email);
+    /** check if user exists */
+    const existsUser = await this.usersRepository.getByEmail(dto.email);
     if (existsUser) {
       throw new BadRequestException('User exists');
     }
@@ -26,19 +33,32 @@ export class UserService {
     const user = new User();
     user.email = dto.email;
     user.name = dto.name;
+    /** encrypt password */
     user.password = await bcrypt.hash(
       dto.password,
       this.configService.get('SALT'),
     );
 
-    return this.usersRepository.save(user);
+    return this.usersRepository.save(user).catch((err) => {
+      this.logger.error(`Failed to create user. ERROR: ${err.message}`);
+      throw new InternalServerErrorException();
+    });
   }
 
-  async findByEmail(email: string): Promise<User> {
-    return this.usersRepository.findByEmail(email);
+  async getById(id: string): Promise<User> {
+    return this.usersRepository.getById(id);
+  }
+
+  async getByEmailWithPassword(email: string): Promise<User> {
+    return this.usersRepository.getByEmailWithPassword(email);
   }
 
   async isPasswordMatch(user: User, password): Promise<boolean> {
-    return await bcrypt.compare(password, user.password);
+    try {
+      return await bcrypt.compare(password, user.password);
+    } catch (err) {
+      this.logger.error(`Compare password failed. Error: ${err.message}`);
+      throw new InternalServerErrorException();
+    }
   }
 }
