@@ -11,7 +11,7 @@ const config = new DataSource({
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/../migrations/*.ts'],
   migrationsTableName: 'migrations',
-  logging: true,
+  logging: false,
   synchronize: false,
 });
 

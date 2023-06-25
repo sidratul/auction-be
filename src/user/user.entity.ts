@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Item } from '../item/item.entity';
 
 @Entity('users')
 export class User {
@@ -22,15 +24,16 @@ export class User {
   @Column({ type: 'text', select: false })
   password: string;
 
+  @OneToMany(() => Item, (item) => item.user)
+  items: Promise<Item[]>;
+
   @CreateDateColumn({
-    name: 'created_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    name: 'update_at',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
