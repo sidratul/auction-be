@@ -3,8 +3,10 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { ItemStatus } from './item.enum';
@@ -15,6 +17,9 @@ export class Item {
   @PrimaryGeneratedColumn('uuid')
   @Generated('uuid')
   id: string;
+
+  @Column({ type: 'text' })
+  name: string;
 
   /**
    * save time in second
@@ -38,6 +43,11 @@ export class Item {
   @Column({ type: 'timestamptz', nullable: true })
   endDate?: Date;
 
+  @Column()
+  @RelationId((item: Item) => item.user)
+  @Index()
+  userId: string;
+
   @ManyToOne(() => User, (user) => user.items, {
     cascade: true,
   })
@@ -47,11 +57,11 @@ export class Item {
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
-  createdAt: Date;
+  createdAt?: Date;
 
   @UpdateDateColumn({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
-  updateAt: Date;
+  updateAt?: Date;
 }
