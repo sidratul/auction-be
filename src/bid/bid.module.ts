@@ -6,6 +6,7 @@ import { BidRepository } from './bid.repository';
 import { Bid } from './bid.entity';
 import { ItemModule } from 'src/item/item.module';
 import { UserModule } from 'src/user/user.module';
+import { BidController } from './bid.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UserModule } from 'src/user/user.module';
     UserModule,
   ],
   providers: [BidService, BidRepository],
-  controllers: [],
+  controllers: [BidController],
   exports: [BidService],
 })
 export class BidModule {}

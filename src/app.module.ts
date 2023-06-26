@@ -7,17 +7,19 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ItemModule } from './item/item.module';
 import { BidModule } from './bid/bid.module';
+import { BalanceModule } from './balance/balance.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    UserModule,
     AuthModule,
+    BalanceModule,
     BidModule,
     DatabaseModule,
     ItemModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

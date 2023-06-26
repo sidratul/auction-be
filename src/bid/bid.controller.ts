@@ -9,7 +9,7 @@ import { User } from 'src/user/user.entity';
 
 @Controller('bids')
 @UseGuards(AuthGuard)
-export class BidsController {
+export class BidController {
   constructor(private readonly bidService: BidService) {}
 
   @Post()
