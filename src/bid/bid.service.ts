@@ -15,7 +15,7 @@ export class BidService {
 
   async createBid(dto: CreateBidDto): Promise<Bid> {
     /** validate bid interval and validate bid price */
-    const [] = await Promise.all([
+    await Promise.all([
       this.validateUserBid(dto.user.id),
       this.validateBidPrice(dto.itemId, dto.price),
     ]);
@@ -25,6 +25,7 @@ export class BidService {
     bid.price = dto.price;
     bid.userId = dto.user.id;
 
+    /** update item and set new bid to highest bid */
     const item = await this.itemService.setHighestBid(bid);
     return item.highestBid;
   }

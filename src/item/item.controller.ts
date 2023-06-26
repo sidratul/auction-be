@@ -13,7 +13,7 @@ import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 import { ListItemDto } from './dto/list.dto';
-import { User } from 'src/user/user.entity';
+import { User } from '../user/user.entity';
 
 @Controller('items')
 @UseGuards(AuthGuard)
@@ -26,7 +26,11 @@ export class ItemsController {
   }
 
   @Post()
-  async createItem(@Body() createItemDto: CreateItemDto): Promise<Item> {
+  async createItem(
+    @Body() createItemDto: CreateItemDto,
+    @UserContext() user: User,
+  ): Promise<Item> {
+    createItemDto.user = user;
     return this.itemService.createItem(createItemDto);
   }
 
