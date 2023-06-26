@@ -4,13 +4,17 @@ import {
   Entity,
   Generated,
   Index,
+  JoinColumn,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { ItemStatus } from './item.enum';
 import { User } from '../user/user.entity';
+import { Bid } from '../bid/bid.entity';
 
 @Entity('items')
 export class Item {
@@ -52,6 +56,13 @@ export class Item {
     cascade: true,
   })
   user: Promise<User>;
+
+  @OneToMany(() => Bid, (bid) => bid.item)
+  bids: Promise<Bid[]>;
+
+  @OneToOne(() => Bid, { nullable: true, cascade: true })
+  @JoinColumn({ name: 'highestBidId' })
+  highestBid: Promise<Bid>;
 
   @CreateDateColumn({
     type: 'timestamptz',

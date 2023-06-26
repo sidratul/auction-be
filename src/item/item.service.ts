@@ -1,14 +1,15 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotFoundException,
 } from '@nestjs/common';
 import { ItemRepository } from './item.repository';
 import { Item } from './item.entity';
 import { CreateItemDto } from './dto/item.dto';
 import { ItemStatus } from './item.enum';
 import { ListItemDto } from './dto/list.dto';
+import { Bid } from '../bid/bid.entity';
 
 @Injectable()
 export class ItemService {
@@ -22,8 +23,8 @@ export class ItemService {
 
   async getByIdAndUserId(id: string, userId: string): Promise<Item> {
     return this.itemRepository.getByIdAndUserId(id, userId).catch(() => {
-      this.logger.warn(`Item not found with id: ${id}`);
-      throw new NotFoundException(`Item not found`);
+      this.logger.warn(`Item not found with id: ${id} and user id : ${userId}`);
+      throw new BadRequestException(`Invalid item`);
     });
   }
 
@@ -51,6 +52,24 @@ export class ItemService {
 
     return this.itemRepository.save(item).catch((err) => {
       this.logger.error(`Failed publish item. Error: ${err.message}`);
+      throw new InternalServerErrorException();
+    });
+  }
+
+  async setHighestBid(bid: Bid): Promise<Item> {
+    const item = await this.itemRepository.getById(bid.itemId);
+
+    if (!item) {
+      this.logger.warn(
+        `Invalid item when set highest bid. item id: ${bid.itemId}`,
+      );
+      throw new BadRequestException('Invalid item');
+    }
+
+    item.highestBid = Promise.resolve(bid);
+
+    return this.itemRepository.save(item).catch((err) => {
+      this.logger.error(`Failed to create and set bid. Error: ${err.message}`);
       throw new InternalServerErrorException();
     });
   }

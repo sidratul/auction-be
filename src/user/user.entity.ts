@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Item } from '../item/item.entity';
+import { Bid } from '../bid/bid.entity';
 
 @Entity('users')
 export class User {
@@ -26,6 +27,9 @@ export class User {
 
   @OneToMany(() => Item, (item) => item.user)
   items: Promise<Item[]>;
+
+  @OneToMany(() => Bid, (bid) => bid.user)
+  bids: Promise<Bid[]>;
 
   @CreateDateColumn({
     type: 'timestamptz',

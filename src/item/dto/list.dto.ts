@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsNumber, Min } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsUUID, Min } from 'class-validator';
 import { ItemStatus } from '../item.enum';
 import { Optional } from '@nestjs/common';
 
@@ -28,6 +28,7 @@ export class ListItemDto {
   @IsEnum(ItemStatus, { each: true })
   status: ItemStatus[];
 
+  @IsUUID('4')
   @ApiProperty({ description: 'User ID (uuid)' })
   @Optional()
   userId: string;
