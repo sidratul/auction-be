@@ -9,6 +9,7 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './user.dto';
 import { ConfigService } from '@nestjs/config';
+import { BalanceService } from 'src/balance/balance.service';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,7 @@ export class UserService {
   constructor(
     private usersRepository: UserRepository,
     private configService: ConfigService,
+    private readonly balanceService: BalanceService,
   ) {}
 
   findAll(): Promise<User[]> {
@@ -39,10 +41,14 @@ export class UserService {
       this.configService.get('SALT'),
     );
 
-    return this.usersRepository.save(user).catch((err) => {
-      this.logger.error(`Failed to create user. ERROR: ${err.message}`);
-      throw new InternalServerErrorException();
-    });
+    const balance = this.balanceService.createBalanceObj(user);
+
+    return this.usersRepository
+      .saveWithNewBalance(user, balance)
+      .catch((err) => {
+        this.logger.error(`Failed to create user. ERROR: ${err.message}`);
+        throw new InternalServerErrorException();
+      });
   }
 
   async getById(id: string): Promise<User> {

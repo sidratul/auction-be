@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './user.dto';
 import { UserRepository } from './user.repository';
 import { ConfigService } from '@nestjs/config';
+import { BalanceService } from '../balance/balance.service';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -17,15 +18,26 @@ describe('UserService', () => {
     },
   };
 
+  const balanceService = {
+    createBalanceObj() {
+      return;
+    },
+  };
+
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
         UserRepository,
         ConfigService,
+        BalanceService,
         {
           provide: UserRepository,
           useValue: userRepository,
+        },
+        {
+          provide: BalanceService,
+          useValue: balanceService,
         },
         {
           provide: ConfigService,

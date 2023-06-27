@@ -21,13 +21,19 @@ export class BalanceService {
   ) {}
 
   async createBalance(user: User): Promise<Balance> {
-    const balance = new Balance();
-    balance.user = Promise.resolve(user);
+    const balance = this.createBalanceObj(user);
 
     return this.balanceRepository.save(balance).catch((err) => {
       this.logger.error(`Error creating balance. Error: ${err.message}`);
       throw new InternalServerErrorException();
     });
+  }
+
+  createBalanceObj(user: User): Balance {
+    const balance = new Balance();
+    balance.user = Promise.resolve(user);
+
+    return balance;
   }
 
   async deposit(dto: BalanceDto): Promise<Balance> {

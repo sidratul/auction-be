@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { ItemModule } from 'src/item/item.module';
@@ -15,7 +15,7 @@ import { BalanceHistoryService } from './balanceHistory/balanceHistory.service';
     TypeOrmModule.forFeature([Balance, BalanceHistory]),
     ItemModule,
     AuthModule,
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   providers: [
     BalanceService,
