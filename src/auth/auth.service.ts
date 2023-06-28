@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { LoginDto } from './login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { AuthToken, TokenPayload } from './types';
+import { LoginResponse, TokenPayload } from './types';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.entity';
 
@@ -23,7 +23,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(dto: LoginDto): Promise<AuthToken> {
+  async login(dto: LoginDto): Promise<LoginResponse> {
     const user = await this.userService.getByEmailWithPassword(dto.email);
     if (!user) {
       throw new BadRequestException('User not exist');
@@ -37,11 +37,13 @@ export class AuthService {
     return this.getTokenFromUser(user);
   }
 
-  async getTokenFromUser(user: User): Promise<AuthToken> {
+  async getTokenFromUser(user: User): Promise<LoginResponse> {
     const payload: TokenPayload = {
       id: user.id,
       email: user.email,
     };
+
+    delete user.password;
 
     const token = await this.jwtService.signAsync(payload).catch((err) => {
       this.logger.error(`Failed to create jwt token. Error: ${err.message}`);
@@ -50,6 +52,7 @@ export class AuthService {
 
     /** TODO: Create refresh token */
     return {
+      user,
       access_token: token,
     };
   }

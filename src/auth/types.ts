@@ -1,4 +1,7 @@
-export interface AuthToken {
+import { User } from "../user/user.entity";
+
+export interface LoginResponse {
+  user: User;
   access_token: string;
 }
 

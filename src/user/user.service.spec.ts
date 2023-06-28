@@ -16,11 +16,14 @@ describe('UserService', () => {
     getByEmail() {
       return;
     },
+    saveWithNewBalance() {
+      return;
+    },
   };
 
   const balanceService = {
     createBalanceObj() {
-      return;
+      return {};
     },
   };
 
@@ -73,7 +76,7 @@ describe('UserService', () => {
       jest
         .spyOn(userRepository, 'getByEmail')
         .mockImplementation(() => Promise.resolve(undefined));
-      jest.spyOn(userRepository, 'save').mockImplementation(() =>
+      jest.spyOn(userRepository, 'saveWithNewBalance').mockImplementation(() =>
         Promise.resolve({
           ...data,
           id: uuid,

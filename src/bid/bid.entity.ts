@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Item } from 'src/item/item.entity';
+import { Item } from '../item/item.entity';
 
 @Entity('bids')
 export class Bid {

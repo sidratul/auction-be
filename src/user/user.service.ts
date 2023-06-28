@@ -1,15 +1,17 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
+  forwardRef,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './user.dto';
 import { ConfigService } from '@nestjs/config';
-import { BalanceService } from 'src/balance/balance.service';
+import { BalanceService } from '../balance/balance.service';
 
 @Injectable()
 export class UserService {
@@ -18,6 +20,7 @@ export class UserService {
   constructor(
     private usersRepository: UserRepository,
     private configService: ConfigService,
+    @Inject(forwardRef(() => BalanceService))
     private readonly balanceService: BalanceService,
   ) {}
 

@@ -15,7 +15,7 @@ describe('ItemService', () => {
     email: 'sidratul@gmail.com',
   } as User;
 
-  const item: Item = {
+  const item = {
     id: '3d2743e8-a809-48af-aa77-2555a5ff33b3',
     name: 'Item 1',
     startPrice: 100,
@@ -23,7 +23,7 @@ describe('ItemService', () => {
     time: 60 * 60,
     user: Promise.resolve(user),
     userId: user.id,
-  };
+  } as Item;
 
   const itemRepository = {
     save(item: Item) {
