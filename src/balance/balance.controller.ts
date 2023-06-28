@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { ApiBody } from '@nestjs/swagger';
 import { UserContext } from 'src/auth/auth.decorator';
@@ -20,5 +20,11 @@ export class BalanceController {
   ): Promise<Balance> {
     dto.user = user;
     return this.balanceService.deposit(dto);
+  }
+
+  @Get()
+  @ApiBody({ type: BalanceDto })
+  async myBalance(@UserContext() user: User): Promise<Balance> {
+    return this.balanceService.getByUserId(user.id);
   }
 }
