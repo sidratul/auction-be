@@ -7,7 +7,7 @@ import { BalanceDto } from './balance.dto';
 import { Balance } from './balance.entity';
 import { BalanceService } from './balance.service';
 
-@Controller('balance')
+@Controller('balances')
 @UseGuards(AuthGuard)
 export class BalanceController {
   constructor(private readonly balanceService: BalanceService) {}
