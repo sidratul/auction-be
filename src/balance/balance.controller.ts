@@ -23,7 +23,6 @@ export class BalanceController {
   }
 
   @Get()
-  @ApiBody({ type: BalanceDto })
   async myBalance(@UserContext() user: User): Promise<Balance> {
     return this.balanceService.getByUserId(user.id);
   }

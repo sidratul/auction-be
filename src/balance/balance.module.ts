@@ -9,6 +9,7 @@ import { BalanceHistory } from './balanceHistory/balanceHistory.entity';
 import { BalanceHistoryRepository } from './balanceHistory/balanceHistory.repository';
 import { Balance } from './balance.entity';
 import { BalanceHistoryService } from './balanceHistory/balanceHistory.service';
+import { BalanceController } from './balance.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { BalanceHistoryService } from './balanceHistory/balanceHistory.service';
     BalanceHistoryService,
     BalanceHistoryRepository,
   ],
-  controllers: [],
+  controllers: [BalanceController],
   exports: [BalanceService],
 })
 export class BalanceModule {}

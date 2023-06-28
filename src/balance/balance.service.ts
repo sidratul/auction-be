@@ -66,7 +66,7 @@ export class BalanceService {
   }
 
   async getByUserId(userId: string): Promise<Balance> {
-    return this.balanceRepository.getByUserId(userId).then(() => {
+    return this.balanceRepository.getByUserId(userId).catch(() => {
       this.logger.warn(`No balance found for user id: ${userId}`);
       throw new BadRequestException();
     });
