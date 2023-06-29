@@ -16,12 +16,12 @@ export class BalanceHistoryService {
 
   constructor(private historyRepository: BalanceHistoryRepository) {}
 
-  addBalanceHistory(
+  getBalanceHistoryObj(
     balance: Balance,
     params: AddBalanceHistory,
-  ): Promise<BalanceHistory> {
+  ): BalanceHistory {
     const balanceHistory = new BalanceHistory();
-    if (balanceHistory.status === BalanceHistoryStatus.BUY) {
+    if (params.status === BalanceHistoryStatus.BUY) {
       balance.amount -= params.amount;
     } else {
       balance.amount += params.amount;
@@ -36,6 +36,15 @@ export class BalanceHistoryService {
     balanceHistory.balance = Promise.resolve(balance);
     balanceHistory.status = params.status;
     balanceHistory.description = params.description;
+
+    return balanceHistory;
+  }
+
+  async addBalanceHistory(
+    balance: Balance,
+    params: AddBalanceHistory,
+  ): Promise<BalanceHistory> {
+    const balanceHistory = await this.getBalanceHistoryObj(balance, params);
 
     return this.historyRepository.save(balanceHistory).catch((err) => {
       this.logger.error(`Error save balance history. Error: ${err.message}`);

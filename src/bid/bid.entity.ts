@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Item } from '../item/item.entity';
+import { numberTransformer } from '../utils';
 
 @Entity('bids')
 export class Bid {
@@ -18,7 +19,10 @@ export class Bid {
   @Generated('uuid')
   id: string;
 
-  @Column({ type: 'numeric' })
+  @Column({
+    type: 'numeric',
+    transformer: numberTransformer,
+  })
   price: number;
 
   @Column()

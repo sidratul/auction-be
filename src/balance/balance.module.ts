@@ -25,6 +25,6 @@ import { BalanceController } from './balance.controller';
     BalanceHistoryRepository,
   ],
   controllers: [BalanceController],
-  exports: [BalanceService],
+  exports: [BalanceService, BalanceHistoryService],
 })
 export class BalanceModule {}

@@ -9,7 +9,6 @@ import { Item } from './item.entity';
 import { CreateItemDto } from './dto/item.dto';
 import { ItemStatus } from './item.enum';
 import { ListItemDto } from './dto/list.dto';
-import { Bid } from '../bid/bid.entity';
 import { ListData } from 'src/types';
 
 @Injectable()
@@ -71,21 +70,14 @@ export class ItemService {
     });
   }
 
-  async setHighestBid(bid: Bid): Promise<Item> {
-    const item = await this.itemRepository.getById(bid.itemId);
+  async getByIdWithHighstBid(id: string): Promise<Item> {
+    const item = await this.itemRepository.getByIdWithHighstBid(id);
 
     if (!item) {
-      this.logger.warn(
-        `Invalid item when set highest bid. item id: ${bid.itemId}`,
-      );
+      this.logger.warn(`Invalid item id: ${id}`);
       throw new BadRequestException('Invalid item');
     }
 
-    item.highestBid = Promise.resolve(bid);
-
-    return this.itemRepository.save(item).catch((err) => {
-      this.logger.error(`Failed to create and set bid. Error: ${err.message}`);
-      throw new InternalServerErrorException();
-    });
+    return item;
   }
 }

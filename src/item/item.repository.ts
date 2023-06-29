@@ -24,8 +24,13 @@ export class ItemRepository {
     return query.getManyAndCount();
   }
 
-  async getById(id: string): Promise<Item> {
-    return this.itemRepository.findOneByOrFail({ id });
+  async getByIdWithHighstBid(id: string): Promise<Item> {
+    return this.itemRepository.findOneOrFail({
+      relations: ['highestBid'],
+      where: {
+        id: id,
+      }
+    });
   }
 
   async getByIdAndUserId(id: string, userId: string): Promise<Item> {

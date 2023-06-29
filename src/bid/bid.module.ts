@@ -7,6 +7,7 @@ import { Bid } from './bid.entity';
 import { ItemModule } from 'src/item/item.module';
 import { UserModule } from 'src/user/user.module';
 import { BidController } from './bid.controller';
+import { BalanceModule } from 'src/balance/balance.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BidController } from './bid.controller';
     ItemModule,
     AuthModule,
     UserModule,
+    BalanceModule,
   ],
   providers: [BidService, BidRepository],
   controllers: [BidController],

@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { BalanceHistory } from './balanceHistory/balanceHistory.entity';
+import { numberTransformer } from '../utils';
 
 @Entity('balances')
 export class Balance {
@@ -21,14 +22,7 @@ export class Balance {
   @Column({
     type: 'numeric',
     default: 0,
-    transformer: {
-      from(data: string): number {
-        return parseFloat(data);
-      },
-      to(data: number): number {
-        return data;
-      },
-    },
+    transformer: numberTransformer,
   })
   amount: number;
 

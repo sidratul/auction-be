@@ -15,6 +15,7 @@ import {
 import { ItemStatus } from './item.enum';
 import { User } from '../user/user.entity';
 import { Bid } from '../bid/bid.entity';
+import { numberTransformer } from '../utils';
 
 @Entity('items')
 export class Item {
@@ -28,10 +29,16 @@ export class Item {
   /**
    * save time in second
    */
-  @Column({ type: 'numeric' })
+  @Column({
+    type: 'numeric',
+    transformer: numberTransformer,
+  })
   time: number;
 
-  @Column({ type: 'numeric' })
+  @Column({
+    type: 'numeric',
+    transformer: numberTransformer,
+  })
   startPrice: number;
 
   @Column({
