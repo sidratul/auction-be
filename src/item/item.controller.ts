@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -20,8 +21,8 @@ import { User } from '../user/user.entity';
 export class ItemsController {
   constructor(private readonly itemService: ItemService) {}
 
-  @Post()
-  async findAll(@Body() listItemDto: ListItemDto): Promise<Item[]> {
+  @Get()
+  async findAll(@Param() listItemDto: ListItemDto): Promise<Item[]> {
     return this.itemService.findAll(listItemDto);
   }
 

@@ -37,6 +37,7 @@ export class BalanceService {
   }
 
   async deposit(dto: BalanceDto): Promise<Balance> {
+    dto.description = `Deposit ${dto.amount}`;
     return this.addBalanceHistory(dto, BalanceHistoryStatus.DEPOSIT);
   }
 

@@ -4,14 +4,11 @@ import {
   Entity,
   Generated,
   Index,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   RelationId,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../user/user.entity';
 import { Balance } from '../balance.entity';
 import { BalanceHistoryStatus } from './balanceHistory.enum';
 
@@ -27,6 +24,11 @@ export class BalanceHistory {
   @Column({ type: 'text' })
   description: string;
 
+  @Column()
+  @RelationId((history: BalanceHistory) => history.balance)
+  @Index()
+  balanceId: string;
+
   @ManyToOne(() => Balance, (balance) => balance.histories, {
     cascade: true,
   })
@@ -38,15 +40,6 @@ export class BalanceHistory {
     default: BalanceHistoryStatus.BUY,
   })
   status: BalanceHistoryStatus;
-
-  @Column()
-  @RelationId((history: BalanceHistory) => history.balance)
-  @Index()
-  userId: string;
-
-  @OneToOne(() => User, { nullable: false })
-  @JoinColumn({ name: 'userId' })
-  user: Promise<User>;
 
   @CreateDateColumn({
     type: 'timestamptz',

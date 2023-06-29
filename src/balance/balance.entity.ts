@@ -18,7 +18,18 @@ export class Balance {
   @Generated('uuid')
   id: string;
 
-  @Column({ type: 'numeric', default: 0 })
+  @Column({
+    type: 'numeric',
+    default: 0,
+    transformer: {
+      from(data: string): number {
+        return parseFloat(data);
+      },
+      to(data: number): number {
+        return data;
+      },
+    },
+  })
   amount: number;
 
   @OneToOne(() => User, { nullable: false })
