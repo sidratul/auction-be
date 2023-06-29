@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
@@ -15,6 +16,7 @@ import { CreateItemDto } from './dto/item.dto';
 import { Item } from './item.entity';
 import { ListItemDto } from './dto/list.dto';
 import { User } from '../user/user.entity';
+import { ListData } from 'src/types';
 
 @Controller('items')
 @UseGuards(AuthGuard)
@@ -22,7 +24,7 @@ export class ItemsController {
   constructor(private readonly itemService: ItemService) {}
 
   @Get()
-  async findAll(@Param() listItemDto: ListItemDto): Promise<Item[]> {
+  async findAll(@Query() listItemDto: ListItemDto): Promise<ListData<Item>> {
     return this.itemService.findAll(listItemDto);
   }
 

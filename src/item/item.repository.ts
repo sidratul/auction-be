@@ -11,17 +11,17 @@ export class ItemRepository {
     private readonly itemRepository: Repository<Item>,
   ) {}
 
-  async findAll(dto: ListItemDto): Promise<Item[]> {
-    const query = this.itemRepository.createQueryBuilder('item').where('1');
+  async findAll(dto: ListItemDto): Promise<[Item[], number]> {
+    const query = this.itemRepository.createQueryBuilder('item').where('true');
 
-    if (dto.userId) {
-      query.andWhere('item.userId = :userId', { userId: dto.userId });
-    }
+    // if (dto.userId) {
+    //   query.andWhere('item.userId = :userId', { userId: dto.userId });
+    // }
 
     query.offset((dto.page - 1) * dto.limit);
     query.limit(dto.limit);
 
-    return query.getMany();
+    return query.getManyAndCount();
   }
 
   async getById(id: string): Promise<Item> {

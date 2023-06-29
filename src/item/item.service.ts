@@ -10,6 +10,7 @@ import { CreateItemDto } from './dto/item.dto';
 import { ItemStatus } from './item.enum';
 import { ListItemDto } from './dto/list.dto';
 import { Bid } from '../bid/bid.entity';
+import { ListData } from 'src/types';
 
 @Injectable()
 export class ItemService {
@@ -17,8 +18,22 @@ export class ItemService {
 
   constructor(private itemRepository: ItemRepository) {}
 
-  async findAll(listDto: ListItemDto) {
-    return this.itemRepository.findAll(listDto);
+  async findAll(listDto: ListItemDto): Promise<ListData<Item>> {
+    const [items, total] = await this.itemRepository
+      .findAll(listDto)
+      .catch((err) => {
+        this.logger.warn(
+          `error get item list with data ${JSON.stringify(listDto)}. Error: ${
+            err.message
+          }`,
+        );
+        throw new InternalServerErrorException();
+      });
+
+    return {
+      total,
+      data: items,
+    };
   }
 
   async getByIdAndUserId(id: string, userId: string): Promise<Item> {
