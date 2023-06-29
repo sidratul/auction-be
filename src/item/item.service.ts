@@ -35,8 +35,8 @@ export class ItemService {
     };
   }
 
-  async getByIdAndUserId(id: string, userId: string): Promise<Item> {
-    return this.itemRepository.getByIdAndUserId(id, userId).catch(() => {
+  async getPublishReadyItem(id: string, userId: string): Promise<Item> {
+    return this.itemRepository.getPublishReadyItem(id, userId).catch(() => {
       this.logger.warn(`Item not found with id: ${id} and user id : ${userId}`);
       throw new BadRequestException(`Invalid item`);
     });
@@ -56,7 +56,7 @@ export class ItemService {
   }
 
   async publishItem(id: string, userId: string): Promise<Item> {
-    const item = await this.getByIdAndUserId(id, userId);
+    const item = await this.getPublishReadyItem(id, userId);
     item.status = ItemStatus.PUBLISHED;
 
     const date = new Date();

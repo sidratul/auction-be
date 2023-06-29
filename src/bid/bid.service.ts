@@ -9,6 +9,7 @@ import { Balance } from '../balance/balance.entity';
 import { Item } from '../item/item.entity';
 import { BalanceHistoryService } from '../balance/balanceHistory/balanceHistory.service';
 import { BalanceHistoryStatus } from '../balance/balanceHistory/balanceHistory.enum';
+import { ItemStatus } from 'src/item/item.enum';
 
 @Injectable()
 export class BidService {
@@ -33,6 +34,14 @@ export class BidService {
     bid.itemId = dto.itemId;
     bid.price = dto.price;
     bid.userId = dto.user.id;
+
+    if (item.status === ItemStatus.CREATED) {
+      throw new BadRequestException('Item is not yet published');
+    }
+
+    if (item.endDate < new Date()) {
+      throw new BadRequestException('Bid time has ended');
+    }
 
     item.highestBid = Promise.resolve(bid);
 
@@ -70,15 +79,19 @@ export class BidService {
    */
   private async validateUserBid(userId: string): Promise<void> {
     const date = new Date();
-    date.setSeconds(date.getSeconds() + BID_INTERVAL);
+    date.setSeconds(date.getSeconds() - BID_INTERVAL);
 
     const bid = await this.bidRepository.getBidByUserIdAndCreatedDate(
       userId,
       date,
     );
 
+    console.log(bid);
+
     if (bid) {
-      throw new BadRequestException(`You can only bid in each 5second`);
+      throw new BadRequestException(
+        `You can only bid in each ${BID_INTERVAL} second`,
+      );
     }
   }
 
