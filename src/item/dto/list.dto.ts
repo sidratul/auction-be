@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { ItemStatus } from '../item.enum';
 import { Optional } from '@nestjs/common';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { Item } from '../item.entity';
 
 export class ListItemDto {
@@ -47,6 +47,9 @@ export class ListItemDto {
     isArray: true,
     enum: ItemStatus,
   })
+  @IsString({ each: true })
+  @Type(() => String)
+  @Transform(({ value }) => value.split(','))
   @IsArray()
   @IsEnum(ItemStatus, { each: true })
   status: ItemStatus[];
