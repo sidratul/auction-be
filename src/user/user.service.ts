@@ -41,7 +41,7 @@ export class UserService {
     /** encrypt password */
     user.password = await bcrypt.hash(
       dto.password,
-      this.configService.get('SALT'),
+      this.configService.get('SALT') || 10,
     );
 
     const balance = this.balanceService.createBalanceObj(user);
