@@ -1,4 +1,4 @@
-import { MoreThan, Repository } from 'typeorm';
+import { In, MoreThan, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bid } from './bid.entity';
@@ -58,5 +58,21 @@ export class BidRepository {
         return params.bid;
       },
     );
+  }
+
+  async getGroupByUserByHIghts(itemId: string): Promise<Bid[]> {
+    const ids = await this.bidRepository
+      .createQueryBuilder('bid')
+      .select('bid.id')
+      .distinctOn(['bid.userId'])
+      .where('bid.itemId = :itemId', { itemId })
+      .orderBy('bid.userId', 'DESC')
+      .addOrderBy('bid.price', 'DESC')
+      .limit(100)
+      .getRawMany<{ bid_id: string }>();
+
+    return this.bidRepository.findBy({
+      id: In(ids.map((obj) => obj.bid_id)),
+    })
   }
 }

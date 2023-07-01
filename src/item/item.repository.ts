@@ -1,9 +1,11 @@
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, LessThan, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Item } from './item.entity';
 import { ListItemDto } from './dto/list.dto';
 import { ItemStatus } from './item.enum';
+import { Balance } from '../balance/balance.entity';
+import { BalanceHistory } from '../balance/balanceHistory/balanceHistory.entity';
 
 @Injectable()
 export class ItemRepository {
@@ -17,10 +19,6 @@ export class ItemRepository {
       .createQueryBuilder('item')
       .leftJoinAndSelect('item.highestBid', 'highestBid')
       .where('true');
-
-    // if (dto.userId) {
-    //   query.andWhere('item.userId = :userId', { userId: dto.userId });
-    // }
 
     if (dto.status) {
       query.where(
@@ -69,5 +67,35 @@ export class ItemRepository {
 
   async save(item: Item): Promise<Item> {
     return this.itemRepository.save(item);
+  }
+
+  async findReadyToComplete(): Promise<Item[]> {
+    return this.itemRepository.findBy({
+      endDate: LessThan(new Date()),
+      status: ItemStatus.PUBLISHED,
+    });
+  }
+
+  async saveComplteItem(
+    item: Item,
+    balances: Balance[],
+    balanceHistories: BalanceHistory[],
+  ): Promise<Item> {
+    const manager = this.itemRepository.manager;
+    return manager.transaction(
+      'SERIALIZABLE',
+      async (transactionalEntityManager) => {
+        await transactionalEntityManager.save(item);
+        if (balances.length){
+          await transactionalEntityManager.save(balances);
+        }
+
+        if (balanceHistories.length){
+          await transactionalEntityManager.save(balanceHistories);
+        }
+
+        return item;
+      },
+    );
   }
 }

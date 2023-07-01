@@ -40,6 +40,8 @@ export class Bid {
   @Index()
   userId: string;
 
+  /** TODO: create status */
+
   @ManyToOne(() => User, (user) => user.items, {
     cascade: true,
   })

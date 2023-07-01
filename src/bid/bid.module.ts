@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { BidService } from './bid.service';
@@ -12,10 +12,10 @@ import { BalanceModule } from 'src/balance/balance.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Bid]),
-    ItemModule,
+    forwardRef(() => ItemModule),
     AuthModule,
-    UserModule,
-    BalanceModule,
+    forwardRef(() => UserModule),
+    forwardRef(() => BalanceModule),
   ],
   providers: [BidService, BidRepository],
   controllers: [BidController],

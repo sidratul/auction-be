@@ -5,13 +5,15 @@ import { Item } from './item.entity';
 import { ItemService } from './item.service';
 import { ItemRepository } from './item.repository';
 import { ItemsController } from './item.controller';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
+import { BidModule } from '../bid/bid.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Item]),
     AuthModule,
     forwardRef(() => UserModule),
+    forwardRef(() => BidModule),
   ],
   providers: [ItemService, ItemRepository],
   controllers: [ItemsController],

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { BidRepository } from './bid.repository';
 import { CreateBidDto } from './bid.dto';
 import { Bid } from './bid.entity';
@@ -9,13 +9,15 @@ import { Balance } from '../balance/balance.entity';
 import { Item } from '../item/item.entity';
 import { BalanceHistoryService } from '../balance/balanceHistory/balanceHistory.service';
 import { BalanceHistoryStatus } from '../balance/balanceHistory/balanceHistory.enum';
-import { ItemStatus } from 'src/item/item.enum';
+import { ItemStatus } from '../item/item.enum';
+import { BalanceHistory } from '../balance/balanceHistory/balanceHistory.entity';
 
 @Injectable()
 export class BidService {
   private readonly logger = new Logger(BidService.name);
   constructor(
     private bidRepository: BidRepository,
+    @Inject(forwardRef(() => ItemService))
     private itemService: ItemService,
     private balanceService: BalanceService,
     private balanceHistoryService: BalanceHistoryService,
@@ -65,6 +67,25 @@ export class BidService {
     });
   }
 
+  async getRefundData(
+    bid: Bid,
+  ): Promise<{ balance: Balance; balanceHistory: BalanceHistory }> {
+    const balance = await this.balanceService.getByUserId(bid.userId);
+    const balanceHistory = this.balanceHistoryService.getBalanceHistoryObj(
+      balance,
+      {
+        amount: bid.price,
+        status: BalanceHistoryStatus.REFUND,
+        description: `Bid Item for $${bid.price}. Charged for $${bid.price}`,
+      },
+    );
+
+    return {
+      balance,
+      balanceHistory,
+    };
+  }
+
   private async getUserLastBidItem(
     userId: string,
     itemId: string,
@@ -85,8 +106,6 @@ export class BidService {
       userId,
       date,
     );
-
-    console.log(bid);
 
     if (bid) {
       throw new BadRequestException(
@@ -127,5 +146,9 @@ export class BidService {
     }
 
     return balance;
+  }
+
+  async getGroupByUserByHIghts(itemId: string): Promise<Bid[]> {
+    return this.bidRepository.getGroupByUserByHIghts(itemId);
   }
 }

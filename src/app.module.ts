@@ -8,9 +8,11 @@ import { AuthModule } from './auth/auth.module';
 import { ItemModule } from './item/item.module';
 import { BidModule } from './bid/bid.module';
 import { BalanceModule } from './balance/balance.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),

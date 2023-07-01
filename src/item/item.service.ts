@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
+  forwardRef,
 } from '@nestjs/common';
 import { ItemRepository } from './item.repository';
 import { Item } from './item.entity';
@@ -10,12 +12,20 @@ import { CreateItemDto } from './dto/item.dto';
 import { ItemStatus } from './item.enum';
 import { ListItemDto } from './dto/list.dto';
 import { ListData } from 'src/types';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { BidService } from '../bid/bid.service';
+import { BalanceHistory } from 'src/balance/balanceHistory/balanceHistory.entity';
+import { Balance } from 'src/balance/balance.entity';
 
 @Injectable()
 export class ItemService {
   private readonly logger = new Logger(ItemService.name);
 
-  constructor(private itemRepository: ItemRepository) {}
+  constructor(
+    private itemRepository: ItemRepository,
+    @Inject(forwardRef(() => BidService))
+    private bidService: BidService,
+  ) {}
 
   async findAll(listDto: ListItemDto): Promise<ListData<Item>> {
     const [items, total] = await this.itemRepository
@@ -79,5 +89,48 @@ export class ItemService {
     }
 
     return item;
+  }
+
+  @Cron(CronExpression.EVERY_5_SECONDS)
+  async completeItem(): Promise<void> {
+    // this.logger.debug('Called every 30 seconds');
+    /* get item with end date < current date and status not completed*/
+    const items = await this.itemRepository.findReadyToComplete();
+    for (const item of items) {
+      /* get hight bid */
+      item.status = ItemStatus.COMPLETED;
+
+      /* get other bid and refund */
+      const bids = await this.bidService.getGroupByUserByHIghts(item.id);
+      const [highestbid, ...refundBids] = bids;
+
+      if (highestbid) {
+        item.highestBid = Promise.resolve(highestbid);
+      }
+
+      const { balanceHistories, balances } = await refundBids.reduce(
+        async (results, bid) => {
+          const res = await results;
+          const balanceData = await this.bidService.getRefundData(bid);
+          res.balances.push(balanceData.balance);
+          res.balanceHistories.push(balanceData.balanceHistory);
+          return results;
+        },
+        Promise.resolve({
+          balances: [] as Balance[],
+          balanceHistories: [] as BalanceHistory[],
+        }),
+      );
+
+      /* update balance, add balance history, update item highest bid and status */
+      await this.itemRepository
+        .saveComplteItem(item, balances, balanceHistories)
+        .catch((err) => {
+          this.logger.error(
+            `Error to completed bid process. Error: ${err.message}`,
+          );
+          //dont throw error. continue to other item
+        });
+    }
   }
 }
